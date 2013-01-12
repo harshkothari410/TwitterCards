@@ -1,8 +1,6 @@
 <?php
 /**
  * TwitterCards
- *
- * 
  * Extensions
  * @author Harsh Kothari (http://mediawiki.org/wiki/User:Harsh4101991) <harshkothari410@gmail.com>
  * @license http://www.gnu.org/copyleft/gpl.html GNU General Public License 2.0 or later
@@ -16,8 +14,6 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * 
  */
 if ( !defined( 'MEDIAWIKI' ) ) die( "This is an extension to the MediaWiki package and cannot be run standalone." );
 
@@ -26,5 +22,5 @@ $wgExtensionCredits['parserhook'][] = array (
 	"name" => "TwitterCards",
 	"author" => "[http://mediawiki.org/wiki/User:Harsh4101991 Harsh Kothari]", 
 	'descriptionmsg' => '',
-	'url' => 'http://bugzilla.wikimedia.org/show_bug.cgi?id=43436',
+	'url' => 'http://www.mediawiki.org/wiki/Extension:TwitterCards',
 );
