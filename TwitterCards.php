@@ -24,7 +24,7 @@ if ( !defined( 'MEDIAWIKI' ) ) die( "This is an extension to the MediaWiki packa
 $wgExtensionCredits['parserhook'][] = array (
 	"path" => __FILE__,
 	"name" => "TwitterCards",
-	"author" => "[http://mediawiki.org/wiki/User:Harsh4101991 Harsh Kothari]",
+	"author" => "[http://mediawiki.org/wiki/User:Harsh4101991 Harsh Kothari]", 
 	'descriptionmsg' => '',
 	'url' => 'http://bugzilla.wikimedia.org/show_bug.cgi?id=43436',
 );
