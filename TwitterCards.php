@@ -20,7 +20,7 @@ if ( !defined( 'MEDIAWIKI' ) ) die( "This is an extension to the MediaWiki packa
 $wgExtensionCredits['parserhook'][] = array (
 	"path" => __FILE__,
 	"name" => "TwitterCards",
-	"author" => "[http://mediawiki.org/wiki/User:Harsh4101991 Harsh Kothari]", 
-	'descriptionmsg' => '',
+	"author" => "Harsh Kothari", 
+	'descriptionmsg' => 'TwitterCards make it possible for you to attach media experiences to Tweets that link to your content.',
 	'url' => 'http://www.mediawiki.org/wiki/Extension:TwitterCards',
 );
