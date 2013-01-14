@@ -36,12 +36,12 @@ $wgExtensionMessagesFiles['TwitterCards'] = $dir . '/TwitterCards.i18n.php';
 #}
 
 $wgHooks['BeforePageDisplay'][] = 'efTwitterCardsHook';
-function efTwitterCardsHook( &$out, &$sk ) {
+function efTwitterCardsHook( &$out, &$sk, $parser ) {
 	global $wgLogo, $wgSitename;
 	$title = $out->getTitle();
 	$isMainpage = $title->isMainPage();
 	$meta = array();
-	$meta["twitter:card"] = "image";
+	$meta["twitter:card"] = "photo";
 	if ( $isMainpage ) {
 		$meta["twitter:site"] = $wgSitename;
 	} else {
@@ -62,22 +62,34 @@ function efTwitterCardsHook( &$out, &$sk ) {
         $myTitle=$parser->getTitle();
         $myArticle=new Article($myTitle);
     }
- 
-    $dbr = wfGetDB( DB_SLAVE );
+#For finding Creater  
+    /*$dbr = wfGetDB( DB_SLAVE );
     $revTable = $dbr->tableName( 'revision' );
- 
-    $pageId = $myArticle->getId();
-    
+ 	$pageId = $myArticle->getId();
     $query = "select rev_user_text from ".$revTable." where rev_page=".$pageId." order by rev_timestamp asc limit 1";
-	
 	$res = mysql_query($query);
-	
-
 	$row = mysql_fetch_object($res);
-
 	$meta["twitter:creator"] = $row->rev_user_text;
+	*/
+
+#another method of finding creater
+	$dbr = wfGetDB( DB_SLAVE );
+	$pageId = $myArticle->getId();
+	$res = $dbr->select(
+        'revision',                                  
+        'rev_user_text',            
+        'rev_page = "'.$pageId.'"',
+        __METHOD__,
+        array( 'ORDER BY' => 'rev_timestamp ASC limit 1' )
+	);
+	
+	foreach( $res as $row ) {
+    	$meta["twitter:creator"] = $row->rev_user_text;	
+    }
+
 	$meta["twitter:title"] = $title->getText();
 	$img_name = $title->getText();
+
 		// Try to chose the most appropriate title for showing in news feeds.
 #	if ( ( defined('NS_BLOG_ARTICLE') && $title->getNamespace() == NS_BLOG_ARTICLE ) ||
 #		( defined('NS_BLOG_ARTICLE_TALK') && $title->getNamespace() == NS_BLOG_ARTICLE_TALK ) ){
@@ -87,7 +99,7 @@ function efTwitterCardsHook( &$out, &$sk ) {
 #		}
 	
 #description testing
-
+/*
 	
 	$dbr = wfGetDB( DB_SLAVE );
     $revTable = $dbr->tableName( 'image' );
@@ -95,6 +107,21 @@ function efTwitterCardsHook( &$out, &$sk ) {
 	$res = mysql_query($query);
 	$row = mysql_fetch_object($res);
 	$meta["twitter:description"] = $row->img_description;
+*/
+
+#another test for description
+	$dbr = wfGetDB( DB_SLAVE );
+	$res = $dbr->select(
+        'image',                                  
+        'img_description',            
+        'img_name = "'.$img_name.'"',
+        __METHOD__,
+        array( 'ORDER BY' => 'img_description ASC limit 1' )
+	);
+	
+	foreach( $res as $row ) {
+    	$meta["twitter:description"] = $row->img_description;	
+    }
 
 ############3
 
