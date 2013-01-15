@@ -61,10 +61,10 @@ function efTwitterCardsHook( &$out, &$sk ) {
 
     if(is_object( $someobj ) ){
     	$text = $someobj->getText();
-    	$meta["I am Text"] = $text;
+    	$meta["twitter:description"] = $text;
     }	
     else{
-    	$meta["I am Text"] = "Not Come";
+    	$meta["twitter:description"] = "Not Come";
     }
     
 
@@ -116,6 +116,7 @@ function efTwitterCardsHook( &$out, &$sk ) {
 */
 
 #another test for description
+/*	
 	$dbr = wfGetDB( DB_SLAVE );
 	$res = $dbr->select(
         'image',                                  
@@ -128,7 +129,7 @@ function efTwitterCardsHook( &$out, &$sk ) {
 	foreach( $res as $row ) {
     	$meta["twitter:description"] = $row->img_description;	
     }
-
+*/
 ############3
 
 /*
