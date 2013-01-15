@@ -16,6 +16,7 @@
  * GNU General Public License for more details.
  */
 if ( !defined( 'MEDIAWIKI' ) ) die( "This is an extension to the MediaWiki package and cannot be run standalone." );
+
 $wgExtensionCredits['parserhook'][] = array (
 	"path" => __FILE__,
 	"name" => "TwitterCards",
@@ -23,22 +24,33 @@ $wgExtensionCredits['parserhook'][] = array (
 	'descriptionmsg' => 'TwitterCards-desc',
 	'url' => 'http://www.mediawiki.org/wiki/Extension:TwitterCards',
 );
-$dir = dirname( __FILE__ );
-$wgExtensionMessagesFiles['TwitterCardsMagic'] = $dir . '/TwitterCards.magic.php';
-$wgExtensionMessagesFiles['TwitterCards'] = $dir . '/TwitterCards.i18n.php';
+
+$wgExtensionMessagesFiles['TwitterCardsMagic'] = __DIR__ . '/TwitterCards.magic.php';
+$wgExtensionMessagesFiles['TwitterCards'] = __DIR__ . '/TwitterCards.i18n.php';
+
 $wgHooks['BeforePageDisplay'][] = 'efTwitterCardsHook';
+
+/**
+ * This is a callback method for the BeforePageDisplay hook.
+ *
+ * @param &$out OutputPage The output page
+ * @param &$sk SkinTemplate The skin template
+ * @return Boolean always true, to go on with BeforePageDisplay processing
+ */
 function efTwitterCardsHook( &$out, &$sk ) {
-	global $wgLogo, $wgSitename, $wgArticle, $wgUploadPath, $wgServer, $wgArticleId; ;
+	global $wgLogo, $wgSitename, $wgArticle, $wgUploadPath, $wgServer, $wgArticleId;
+
 	$title = $out->getTitle();
 	$isMainpage = $title->isMainPage();
+
 	$meta = array();
-	$meta["twitter:card"] = "photo";
+	$meta["twitter:card"] = "photo"; // current proof of concept is tailored to work with images
 	$meta["twitter:site"] = $wgSitename;
 
+	// Processes only articles
 	if ( isset( $wgArticle ) ) {
 		$myArticle = $wgArticle;
-	}
-	else {
+	} else {
 		return true;
 	}
 
@@ -51,50 +63,51 @@ function efTwitterCardsHook( &$out, &$sk ) {
 		__METHOD__,
 		array( 'ORDER BY' => 'rev_timestamp ASC limit 1' )
 	);
-
-	foreach ( $res as $row ) {
-    	$meta["twitter:creator"] = $row->rev_user_text;
+	if ( $row = $res->fetchObject() ) {
+		$meta["twitter:creator"] = $row->rev_user_text;
 	}
 
 	$meta["twitter:title"] = $title->getText();
 	$img_name = $title->getText();
-	# description
-	$dbr = wfGetDB( DB_SLAVE );
-	$res = $dbr->select(
-		'image',
-		'img_description',
-		'img_name = "' . $img_name . '"',
-		__METHOD__,
-		array( 'ORDER BY' => 'img_description ASC limit 1' )
-	);
 
-	foreach ( $res as $row ) {
-    	$meta["twitter:description"] = $row->img_description;
-	}
-
-	if ( isset( $out->mDescription ) ) { // set by Description2 extension, install it if you want proper TwitterCards:description support
+	if ( isset( $out->mDescription ) ) {
+		// Uses the Description2 extension
 		$meta["twitter:description"] = $out->mDescription;
+	} else {
+		// Gets description for content
+		$dbr = wfGetDB( DB_SLAVE );
+		$img_name = str_replace(' ', '_', $img_name); //TODO: use Title object instead to get a proper title
+		$res = $dbr->select(
+			'image',
+			'img_description',
+			'img_name = "' . $img_name . '"',
+			__METHOD__,
+			array( 'ORDER BY' => 'img_description ASC limit 1' )
+		);
+		if ( $row = $res->fetchObject() ) {
+			$meta["twitter:description"] = $row->img_description;
+		}
 	}
 
 	if ( $isMainpage ) {
 		$meta["twitter:url"] = wfExpandUrl( $wgLogo );
-	}
-	else {
+	} else {
 		$meta["twitter:url"] = $title->getFullURL();
 	}
-	# Finding Full Path
+
+	//Gets large thumbnail path
 	$img = wfFindFile( $title );
 	if ( $img ) {
 		$thumb = $img->transform( array( 'width' => 400 ), 0 );
 		$meta["twitter:image"] = $wgServer . $thumb->getUrl();
-	}
-	else {
+	} else {
 		return true;
 	}
 
 	$meta["twitter:image:width"] = 600;
 	$meta["twitter:image:height"] = 600;
 
+	//HTML output
 	foreach ( $meta as $name => $value ) {
 		if ( $value ) {
 			if ( isset( OutputPage::$metaAttrPrefixes ) && isset( OutputPage::$metaAttrPrefixes['name'] ) ) {
@@ -104,5 +117,6 @@ function efTwitterCardsHook( &$out, &$sk ) {
 			}
 		}
 	}
+
 	return true;
 }
