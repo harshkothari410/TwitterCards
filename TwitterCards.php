@@ -36,8 +36,8 @@ function efTwitterCardsHook( &$out, &$sk ) {
 	$meta["twitter:site"] = $wgSitename;
 
 	if ( isset( $wgArticle ) ) {
-    	$myArticle=$wgArticle;        
-    }
+		$myArticle=$wgArticle;
+	}
 	else {
 		return true;
 	}
