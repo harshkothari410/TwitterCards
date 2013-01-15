@@ -70,7 +70,7 @@ function efTwitterCardsHook( &$out, &$sk ) {
 
 	foreach( $res as $row ) {
     	$meta["twitter:description"] = $row->img_description;
-    }
+	}
 
 	if ( isset($out->mDescription) ) { // set by Description2 extension, install it if you want proper TwitterCards:description support
 		$meta["twitter:description"] = $out->mDescription;
