@@ -60,13 +60,59 @@ function efTwitterCardsHook( &$out, &$sk ) {
     $someobj = WikiPage::newFromId(  $myArticle->getId() );
 
     if(is_object( $someobj ) ){
-    	$text = $someobj->getText();
+    	$text = $someobj->getRawText();
     	$meta["twitter:description"] = $text;
     }	
     else{
-    	$meta["twitter:description"] = "Not Come";
+    	#$meta["twitter:description"] = "Not Come";
+    	return true;
     }
-    
+/*
+    $find = 'Summary';
+    $pos = strpos($text,$find);
+    $pos = $pos + 10;
+    if($pos){
+    	$meta["twitter:description"] = substr($text, $pos);
+	}
+	else{
+		$meta["twitter:description"] =" ha ha" ;
+	}
+	*/
+#For Wikipedia Commons Only
+/*=={{int:filedesc}}==
+{{Information
+|description={{en|1=This File shows HotCat demo}}
+|date=2012-12-09 18:09:36
+|source={{own}}
+|author=[[User:Harsh4101991|Harsh4101991]]
+|permission=
+|other_versions=
+|other_fields=
+}}
+
+=={{int:license-header}}==
+{{self|cc-by-sa-3.0}}
+
+*/
+/*
+	$find = "description";  
+	$pos = strpos($text,$find);
+	if ($pos) {
+		$pos = $pos + 19;
+		$find  = "}}"
+
+		$str = substr($str, $pos);
+		$pos1 = strpos($text,$find);
+
+		$description = substr($str, $pos, ($pos1 - $pos));
+
+		$find = "author";
+		$pos = strpos($str, needle)
+
+
+	}
+	
+*/
 
 #For finding Creater  
     /*$dbr = wfGetDB( DB_SLAVE );
