@@ -19,113 +19,30 @@ if ( !defined( 'MEDIAWIKI' ) ) die( "This is an extension to the MediaWiki packa
 $wgExtensionCredits['parserhook'][] = array (
 	"path" => __FILE__,
 	"name" => "TwitterCards",
-	"author" => "Harsh Kothari", 
+	"author" => "Harsh Kothari",
 	'descriptionmsg' => 'TwitterCards-desc',
 	'url' => 'http://www.mediawiki.org/wiki/Extension:TwitterCards',
 );
-
 $dir = dirname( __FILE__ );
 $wgExtensionMessagesFiles['TwitterCardsMagic'] = $dir . '/TwitterCards.magic.php';
 $wgExtensionMessagesFiles['TwitterCards'] = $dir . '/TwitterCards.i18n.php';
-
-#$wgHooks['ParserFirstCallInit'][] = 'efTwitterCardsInit';
-#function efTwitterCardsInit( $parser ) {
-#	$parser->setFunctionHook( 'setmainimage', 'efSetMainImagePF' );
-#	return true;
-#}
-
 $wgHooks['BeforePageDisplay'][] = 'efTwitterCardsHook';
 function efTwitterCardsHook( &$out, &$sk ) {
-	global $wgLogo, $wgSitename;
+	global $wgLogo, $wgSitename, $wgArticle, $wgUploadPath, $wgServer, $wgArticleId;;
 	$title = $out->getTitle();
 	$isMainpage = $title->isMainPage();
-
 	$meta = array();
 	$meta["twitter:card"] = "photo";
 	$meta["twitter:site"] = $wgSitename;
-	
 
-
-#For Finding Creator
-	global $wgArticle, $wgUploadPath, $wgServer, $wgArticleId;
- 
-    if (isset($wgArticle)){
+	if ( isset( $wgArticle ) ) {
     	$myArticle=$wgArticle;        
     }
-    else{
+    else {
     	return true;
     }
-##Fetching whole article    
-   
-    $someobj = WikiPage::newFromId(  $myArticle->getId() );
 
-    if(is_object( $someobj ) ){
-    	$text = $someobj->getRawText();
-    	$meta["twitter:description"] = $text;
-    }	
-    else{
-    	#$meta["twitter:description"] = "Not Come";
-    	return true;
-    }
-/*
-    $find = 'Summary';
-    $pos = strpos($text,$find);
-    $pos = $pos + 10;
-    if($pos){
-    	$meta["twitter:description"] = substr($text, $pos);
-	}
-	else{
-		$meta["twitter:description"] =" ha ha" ;
-	}
-	*/
-#For Wikipedia Commons Only
-/*=={{int:filedesc}}==
-{{Information
-|description={{en|1=This File shows HotCat demo}}
-|date=2012-12-09 18:09:36
-|source={{own}}
-|author=[[User:Harsh4101991|Harsh4101991]]
-|permission=
-|other_versions=
-|other_fields=
-}}
-
-=={{int:license-header}}==
-{{self|cc-by-sa-3.0}}
-
-*/
-/*
-	$find = "description";  
-	$pos = strpos($text,$find);
-	if ($pos) {
-		$pos = $pos + 19;
-		$find  = "}}"
-
-		$str = substr($str, $pos);
-		$pos1 = strpos($text,$find);
-
-		$description = substr($str, $pos, ($pos1 - $pos));
-
-		$find = "author";
-		$pos = strpos($str, needle)
-
-
-	}
-	
-*/
-
-#For finding Creater  
-    /*$dbr = wfGetDB( DB_SLAVE );
-    $revTable = $dbr->tableName( 'revision' );
- 	$pageId = $myArticle->getId();
-    $query = "select rev_user_text from ".$revTable." where rev_page=".$pageId." order by rev_timestamp asc limit 1";
-	$res = mysql_query($query);
-	$row = mysql_fetch_object($res);
-	$meta["twitter:creator"] = $row->rev_user_text;
-	*/
-
-#another method of finding creater
-	$dbr = wfGetDB( DB_SLAVE );
+    $dbr = wfGetDB( DB_SLAVE );
 	$pageId = $myArticle->getId();
 	$res = $dbr->select(
         'revision',                                  
@@ -134,56 +51,30 @@ function efTwitterCardsHook( &$out, &$sk ) {
         __METHOD__,
         array( 'ORDER BY' => 'rev_timestamp ASC limit 1' )
 	);
-	
+
 	foreach( $res as $row ) {
     	$meta["twitter:creator"] = $row->rev_user_text;	
     }
 
 	$meta["twitter:title"] = $title->getText();
 	$img_name = $title->getText();
-
-		// Try to chose the most appropriate title for showing in news feeds.
-#	if ( ( defined('NS_BLOG_ARTICLE') && $title->getNamespace() == NS_BLOG_ARTICLE ) ||
-#		( defined('NS_BLOG_ARTICLE_TALK') && $title->getNamespace() == NS_BLOG_ARTICLE_TALK ) ){
-#			$meta["twitter:title"] = $title->getSubpageText();
-#		} else {
-#			$meta["twitter:title"] = $title->getText();
-#		}
-	
-#description testing
-/*
-	
-	$dbr = wfGetDB( DB_SLAVE );
-    $revTable = $dbr->tableName( 'image' );
-	$query = "SELECT img_description FROM ".$revTable." WHERE img_name='".$img_name."' ORDER BY `img_description` ASC limit 1";
-	$res = mysql_query($query);
-	$row = mysql_fetch_object($res);
-	$meta["twitter:description"] = $row->img_description;
-*/
-
-#another test for description
-/*	
+	#description
 	$dbr = wfGetDB( DB_SLAVE );
 	$res = $dbr->select(
-        'image',                                  
+    	'image',                                  
         'img_description',            
         'img_name = "'.$img_name.'"',
         __METHOD__,
         array( 'ORDER BY' => 'img_description ASC limit 1' )
 	);
-	
+
 	foreach( $res as $row ) {
     	$meta["twitter:description"] = $row->img_description;	
     }
-*/
-############3
 
-/*
-	if ( isset($out->mDescription) ) { // set by Description2 extension, install it if you want proper TwitterCards:description support
-		#$meta["twitter:description"] = $out->mDescription;
+    if ( isset($out->mDescription) ) { // set by Description2 extension, install it if you want proper TwitterCards:description support
+		$meta["twitter:description"] = $out->mDescription;
 	}
-
-*/	
 
 	if( $isMainpage ) {
 		$meta["twitter:url"] = wfExpandUrl($wgLogo);
@@ -191,26 +82,19 @@ function efTwitterCardsHook( &$out, &$sk ) {
 	else {
 		$meta["twitter:url"] = $title->getFullURL();
 	}
-
-
-
-##Finding Full Path	
+	#Finding Full Path	
 	$img = wfFindFile( $title );
-	if($img){
+	if( $img ) {
 		$thumb = $img->transform( array( 'width' => 400), 0 );
 		$meta["twitter:image"] = $wgServer . $thumb->getUrl();
 	}
-	else{
+	else {
 		return true;
 	}
 
-
-####
 	$meta["twitter:image:width"] = 600;
 	$meta["twitter:image:height"] = 600;
-
-
-
+	
 	foreach( $meta as $name => $value ) {
 		if ( $value ) {
 			if ( isset( OutputPage::$metaAttrPrefixes ) && isset( OutputPage::$metaAttrPrefixes['name'] ) ) {
@@ -222,5 +106,3 @@ function efTwitterCardsHook( &$out, &$sk ) {
 	}
 	return true;
 }
-
-
