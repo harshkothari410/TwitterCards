@@ -45,11 +45,11 @@ function efTwitterCardsHook( &$out, &$sk ) {
     $dbr = wfGetDB( DB_SLAVE );
 	$pageId = $myArticle->getId();
 	$res = $dbr->select(
-        'revision',                                  
-        'rev_user_text',            
-        'rev_page = "'.$pageId.'"',
-        __METHOD__,
-        array( 'ORDER BY' => 'rev_timestamp ASC limit 1' )
+		'revision',
+		'rev_user_text',
+		'rev_page = "'.$pageId.'"',
+		__METHOD__,
+		array( 'ORDER BY' => 'rev_timestamp ASC limit 1' )
 	);
 
 	foreach( $res as $row ) {
@@ -61,18 +61,18 @@ function efTwitterCardsHook( &$out, &$sk ) {
 	#description
 	$dbr = wfGetDB( DB_SLAVE );
 	$res = $dbr->select(
-    	'image',                                  
-        'img_description',            
-        'img_name = "'.$img_name.'"',
-        __METHOD__,
-        array( 'ORDER BY' => 'img_description ASC limit 1' )
+		'image',
+		'img_description',
+		'img_name = "'.$img_name.'"',
+		__METHOD__,
+		array( 'ORDER BY' => 'img_description ASC limit 1' )
 	);
 
 	foreach( $res as $row ) {
-    	$meta["twitter:description"] = $row->img_description;	
+    	$meta["twitter:description"] = $row->img_description;
     }
 
-    if ( isset($out->mDescription) ) { // set by Description2 extension, install it if you want proper TwitterCards:description support
+	if ( isset($out->mDescription) ) { // set by Description2 extension, install it if you want proper TwitterCards:description support
 		$meta["twitter:description"] = $out->mDescription;
 	}
 
