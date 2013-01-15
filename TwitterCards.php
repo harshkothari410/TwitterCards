@@ -38,11 +38,11 @@ function efTwitterCardsHook( &$out, &$sk ) {
 	if ( isset( $wgArticle ) ) {
     	$myArticle=$wgArticle;        
     }
-    else {
-    	return true;
-    }
+	else {
+		return true;
+	}
 
-    $dbr = wfGetDB( DB_SLAVE );
+	$dbr = wfGetDB( DB_SLAVE );
 	$pageId = $myArticle->getId();
 	$res = $dbr->select(
 		'revision',
@@ -53,8 +53,8 @@ function efTwitterCardsHook( &$out, &$sk ) {
 	);
 
 	foreach( $res as $row ) {
-    	$meta["twitter:creator"] = $row->rev_user_text;	
-    }
+    	$meta["twitter:creator"] = $row->rev_user_text;
+	}
 
 	$meta["twitter:title"] = $title->getText();
 	$img_name = $title->getText();
