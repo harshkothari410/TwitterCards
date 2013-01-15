@@ -139,8 +139,13 @@ function efTwitterCardsHook( &$out, &$sk ) {
 
 ##Finding Full Path	
 	$img = wfFindFile( $title );
-	$thumb = $img->transform( array( 'width' => 400), 0 );
-	$meta["twitter:image"] = $wgServer . $thumb->getUrl();
+	if($img){
+		$thumb = $img->transform( array( 'width' => 400), 0 );
+		$meta["twitter:image"] = $wgServer . $thumb->getUrl();
+	}
+	else{
+		return true;
+	}
 
 
 ####
