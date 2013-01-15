@@ -94,7 +94,7 @@ function efTwitterCardsHook( &$out, &$sk ) {
 
 	$meta["twitter:image:width"] = 600;
 	$meta["twitter:image:height"] = 600;
-	
+
 	foreach( $meta as $name => $value ) {
 		if ( $value ) {
 			if ( isset( OutputPage::$metaAttrPrefixes ) && isset( OutputPage::$metaAttrPrefixes['name'] ) ) {
