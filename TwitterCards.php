@@ -20,7 +20,7 @@ $wgExtensionCredits['parserhook'][] = array (
 	"path" => __FILE__,
 	"name" => "TwitterCards",
 	"author" => "Harsh Kothari", 
-	'descriptionmsg' => 'TwitterCards make it possible for you to attach media experiences to Tweets that link to your content.',
+	'descriptionmsg' => 'TwitterCards-desc',
 	'url' => 'http://www.mediawiki.org/wiki/Extension:TwitterCards',
 );
 
@@ -47,7 +47,7 @@ function efTwitterCardsHook( &$out, &$sk ) {
 
 
 #For Finding Creator
-	global $wgArticle, $wgUploadPath, $wgServer;
+	global $wgArticle, $wgUploadPath, $wgServer, $wgArticleId;
  
     if (isset($wgArticle)){
     	$myArticle=$wgArticle;        
@@ -55,10 +55,18 @@ function efTwitterCardsHook( &$out, &$sk ) {
     else{
     	return true;
     }
-    #$someobj = getWikiPage();
-    #$someobj = getContent();
-    #$url = $wgServer . $wgUploadPath;
-    //$meta["I am Text"] = ImagePage::getUploadUrl();	
+##Fetching whole article    
+   
+    $someobj = WikiPage::newFromId(  $myArticle->getId() );
+
+    if(is_object( $someobj ) ){
+    	$text = $someobj->getText();
+    	$meta["I am Text"] = $text;
+    }	
+    else{
+    	$meta["I am Text"] = "Not Come";
+    }
+    
 
 #For finding Creater  
     /*$dbr = wfGetDB( DB_SLAVE );
@@ -123,19 +131,21 @@ function efTwitterCardsHook( &$out, &$sk ) {
 
 ############3
 
-
+/*
 	if ( isset($out->mDescription) ) { // set by Description2 extension, install it if you want proper TwitterCards:description support
 		#$meta["twitter:description"] = $out->mDescription;
 	}
-/*
+
+*/	
+
 	if( $isMainpage ) {
-		$meta["twitter:image"] = wfExpandUrl($wgLogo);
+		$meta["twitter:url"] = wfExpandUrl($wgLogo);
 	}
 	else {
-		$meta["twitter:image"] = $title->getFullURL();
+		$meta["twitter:url"] = $title->getFullURL();
 	}
 
-*/
+
 
 ##Finding Full Path	
 	$img = wfFindFile( $title );
@@ -165,6 +175,5 @@ function efTwitterCardsHook( &$out, &$sk ) {
 	}
 	return true;
 }
-
 
 
