@@ -28,7 +28,7 @@ $wgExtensionMessagesFiles['TwitterCardsMagic'] = $dir . '/TwitterCards.magic.php
 $wgExtensionMessagesFiles['TwitterCards'] = $dir . '/TwitterCards.i18n.php';
 $wgHooks['BeforePageDisplay'][] = 'efTwitterCardsHook';
 function efTwitterCardsHook( &$out, &$sk ) {
-	global $wgLogo, $wgSitename, $wgArticle, $wgUploadPath, $wgServer, $wgArticleId;;
+	global $wgLogo, $wgSitename, $wgArticle, $wgUploadPath, $wgServer, $wgArticleId; ;
 	$title = $out->getTitle();
 	$isMainpage = $title->isMainPage();
 	$meta = array();
@@ -36,7 +36,7 @@ function efTwitterCardsHook( &$out, &$sk ) {
 	$meta["twitter:site"] = $wgSitename;
 
 	if ( isset( $wgArticle ) ) {
-		$myArticle=$wgArticle;
+		$myArticle = $wgArticle;
 	}
 	else {
 		return true;
@@ -47,45 +47,45 @@ function efTwitterCardsHook( &$out, &$sk ) {
 	$res = $dbr->select(
 		'revision',
 		'rev_user_text',
-		'rev_page = "'.$pageId.'"',
+		'rev_page = "' . $pageId . '"',
 		__METHOD__,
 		array( 'ORDER BY' => 'rev_timestamp ASC limit 1' )
 	);
 
-	foreach( $res as $row ) {
+	foreach ( $res as $row ) {
     	$meta["twitter:creator"] = $row->rev_user_text;
 	}
 
 	$meta["twitter:title"] = $title->getText();
 	$img_name = $title->getText();
-	#description
+	# description
 	$dbr = wfGetDB( DB_SLAVE );
 	$res = $dbr->select(
 		'image',
 		'img_description',
-		'img_name = "'.$img_name.'"',
+		'img_name = "' . $img_name . '"',
 		__METHOD__,
 		array( 'ORDER BY' => 'img_description ASC limit 1' )
 	);
 
-	foreach( $res as $row ) {
+	foreach ( $res as $row ) {
     	$meta["twitter:description"] = $row->img_description;
 	}
 
-	if ( isset($out->mDescription) ) { // set by Description2 extension, install it if you want proper TwitterCards:description support
+	if ( isset( $out->mDescription ) ) { // set by Description2 extension, install it if you want proper TwitterCards:description support
 		$meta["twitter:description"] = $out->mDescription;
 	}
 
-	if( $isMainpage ) {
-		$meta["twitter:url"] = wfExpandUrl($wgLogo);
+	if ( $isMainpage ) {
+		$meta["twitter:url"] = wfExpandUrl( $wgLogo );
 	}
 	else {
 		$meta["twitter:url"] = $title->getFullURL();
 	}
-	#Finding Full Path	
+	# Finding Full Path
 	$img = wfFindFile( $title );
-	if( $img ) {
-		$thumb = $img->transform( array( 'width' => 400), 0 );
+	if ( $img ) {
+		$thumb = $img->transform( array( 'width' => 400 ), 0 );
 		$meta["twitter:image"] = $wgServer . $thumb->getUrl();
 	}
 	else {
@@ -95,12 +95,12 @@ function efTwitterCardsHook( &$out, &$sk ) {
 	$meta["twitter:image:width"] = 600;
 	$meta["twitter:image:height"] = 600;
 
-	foreach( $meta as $name => $value ) {
+	foreach ( $meta as $name => $value ) {
 		if ( $value ) {
 			if ( isset( OutputPage::$metaAttrPrefixes ) && isset( OutputPage::$metaAttrPrefixes['name'] ) ) {
 				$out->addMeta( "name:$name", $value );
 			} else {
-				$out->addHeadItem("meta:name:$name", "	".Html::element( 'meta', array( 'name' => $name, 'content' => $value ) )."\n");
+				$out->addHeadItem( "meta:name:$name", "	" . Html::element( 'meta', array( 'name' => $name, 'content' => $value ) ) . "\n" );
 			}
 		}
 	}
