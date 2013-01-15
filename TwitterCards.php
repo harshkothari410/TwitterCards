@@ -4,7 +4,7 @@
  * Extensions
  * @author Harsh Kothari (http://mediawiki.org/wiki/User:Harsh4101991) <harshkothari410@gmail.com>
  * @license http://www.gnu.org/copyleft/gpl.html GNU General Public License 2.0 or later
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -16,7 +16,6 @@
  * GNU General Public License for more details.
  */
 if ( !defined( 'MEDIAWIKI' ) ) die( "This is an extension to the MediaWiki package and cannot be run standalone." );
-
 $wgExtensionCredits['parserhook'][] = array (
 	"path" => __FILE__,
 	"name" => "TwitterCards",
@@ -36,32 +35,31 @@ $wgExtensionMessagesFiles['TwitterCards'] = $dir . '/TwitterCards.i18n.php';
 #}
 
 $wgHooks['BeforePageDisplay'][] = 'efTwitterCardsHook';
-function efTwitterCardsHook( &$out, &$sk, $parser ) {
+function efTwitterCardsHook( &$out, &$sk ) {
 	global $wgLogo, $wgSitename;
 	$title = $out->getTitle();
 	$isMainpage = $title->isMainPage();
+
 	$meta = array();
 	$meta["twitter:card"] = "photo";
-	if ( $isMainpage ) {
-		$meta["twitter:site"] = $wgSitename;
-	} else {
-		$meta["twitter:site"] = $wgSitename;
-	}
-
+	$meta["twitter:site"] = $wgSitename;
+	
 
 
 #For Finding Creator
-	global $wgArticle;
+	global $wgArticle, $wgUploadPath, $wgServer;
  
-    if (isset($wgArticle))
-    {
+    if (isset($wgArticle)){
     	$myArticle=$wgArticle;        
     }
-    else
-    { 
-        $myTitle=$parser->getTitle();
-        $myArticle=new Article($myTitle);
+    else{
+    	return true;
     }
+    #$someobj = getWikiPage();
+    #$someobj = getContent();
+    #$url = $wgServer . $wgUploadPath;
+    //$meta["I am Text"] = ImagePage::getUploadUrl();	
+
 #For finding Creater  
     /*$dbr = wfGetDB( DB_SLAVE );
     $revTable = $dbr->tableName( 'revision' );
@@ -129,15 +127,27 @@ function efTwitterCardsHook( &$out, &$sk, $parser ) {
 	if ( isset($out->mDescription) ) { // set by Description2 extension, install it if you want proper TwitterCards:description support
 		#$meta["twitter:description"] = $out->mDescription;
 	}
-
+/*
 	if( $isMainpage ) {
 		$meta["twitter:image"] = wfExpandUrl($wgLogo);
 	}
 	else {
 		$meta["twitter:image"] = $title->getFullURL();
 	}
+
+*/
+
+##Finding Full Path	
+	$img = wfFindFile( $title );
+	$thumb = $img->transform( array( 'width' => 400), 0 );
+	$meta["twitter:image"] = $wgServer . $thumb->getUrl();
+
+
+####
 	$meta["twitter:image:width"] = 600;
 	$meta["twitter:image:height"] = 600;
+
+
 
 	foreach( $meta as $name => $value ) {
 		if ( $value ) {
