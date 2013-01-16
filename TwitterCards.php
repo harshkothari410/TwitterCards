@@ -31,7 +31,7 @@ $wgExtensionMessagesFiles['TwitterCards'] = __DIR__ . '/TwitterCards.i18n.php';
 $wgHooks['BeforePageDisplay'][] = 'efTwitterCardsHook';
 
 /**
- * Adds TwitterCards metadata
+ * Adds TwitterCards metadata for Images.
  * This is a callback method for the BeforePageDisplay hook.
  *
  * @param &$out OutputPage The output page
